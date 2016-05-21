@@ -1,3 +1,36 @@
+body,html {
+  margin: 0;padding: 0;width: 100px;
+  height:100%;
+}
 body {
   background-color: #ccc;
 }
+
+#title {
+  $width:500px;
+  $height:200px;
+  display:none;
+
+  width:100vw;
+  height:100vh;
+
+  position: fixed;
+  z-index:1;
+  left:0;
+  top:0;
+  
+  background-color: #fff;
+  
+  #logo {
+    width: $width;
+    height: $height;
+    margin: $height*-0.5 $width*-0.5;
+    background-image: url(/images/logo.png);
+    background-size: contain;
+    position: absolute;
+    left:50%;
+    top:50%;
+    display:none;
+  }  
+}
+

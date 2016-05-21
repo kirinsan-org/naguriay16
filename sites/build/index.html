@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title></title>
+    <link rel="stylesheet" href="/css/index.css">
     <script src="https://code.jquery.com/jquery-2.2.4.js"></script>
     <script src="/lib/clmtrackr.js"></script>
     <script src="/lib/model_pca_20_svm.js"></script>
@@ -15,6 +16,24 @@
 <div id="title">
   <div id="logo"></div>
 </div>
+<audio src="/sound/kirin.mp3" id="sound-logo"></audio>
+<audio src="/sound/title.mp3" id="title-sound"></audio>
+
+<script>
+  setTimeout(function(){
+    $("#logo").show();
+    $("#sound-logo").get(0).play();
+    
+    setTimeout(function(){
+      $("#title-sound").get(0).play();
+      $("#logo").hide();
+      $("#title-logo").show();
+    },1000)
+  },1000)
+  $("#logo").click(function(){
+    
+  });
+</script>
 
 <img src="/images/face_mask.png" alt="" id="face-mask">
 <video id="videoel" width="400" height="300" preload="auto" loop></video>
@@ -41,103 +60,6 @@
 <script src="/js/main.js"></script>
 <script>
   var motion = new Motion();
-  
-  function getRadian(x, y, x2, y2) { 
-    var radian = Math.atan2(x2 - x, y2 - y);
-    return radian;
-  }
-  
-  function getDistance(x, y, x2, y2) {
-    var distance = Math.sqrt((x2 - x) * (x2 - x) + (y2 - y) * (y2 - y));
-    return distance;
-  }
-  
-  $(function(){
-    var vid = document.getElementById('videoel');
-    var faceMask = document.getElementById('face-mask');
-    var overlay = document.getElementById('overlay');
-    var overlayCC = overlay.getContext('2d');
-    
-    // check for camerasupport
-    
-    navigator.mediaDevices = navigator.mediaDevices || ((navigator.mozGetUserMedia || navigator.webkitGetUserMedia) ? {
-    getUserMedia: function(c) {
-      return new Promise(function(y, n) {
-        (navigator.mozGetUserMedia ||
-          navigator.webkitGetUserMedia).call(navigator, c, y, n);
-      });
-    }
-    } : null);
-
-    if (!navigator.mediaDevices) {
-      console.log("getUserMedia() not supported.");
-      return;
-    }
-    
-    if (navigator.webkitGetUserMedia) {
-      // set up stream
-      
-      var videoSelector = {video : true};
-      if (window.navigator.appVersion.match(/Chrome\/(.*?) /)) {
-        var chromeVersion = parseInt(window.navigator.appVersion.match(/Chrome\/(\d+)\./)[1], 10);
-        if (chromeVersion < 20) {
-          videoSelector = "video";
-        }
-      };
-    
-      navigator.webkitGetUserMedia(videoSelector, function( stream ) {
-        if (vid.mozCaptureStream) {
-          vid.mozSrcObject = stream;
-        } else {
-          vid.src = (window.URL && window.URL.createObjectURL(stream)) || stream;
-        }
-        //vid.play();
-      }, function() {
-
-      });
-    }
-    vid.play();
-    
-    window.ctracker = new clm.tracker();
-    ctracker.init(pModel);
-    ctracker.start(vid);
-    var positions = ctracker.getCurrentPosition();
-     function positionLoop() {
-      requestAnimationFrame(positionLoop);
-      positions = ctracker.getCurrentPosition();
-      //console.log([positions[0][0],positions[0][1],positions[14][0],positions[14][1]]);
-      //console.log(getRadian(positions[33][0],positions[33][1],positions[62][0],positions[62][1])* 180 / Math.PI);
-    }
-    
-    setInterval( function(){
-      overlayCC.save();
-      var tgtWidth = 200;
-      //変形マトリックスに回転を適用
-      var rad = getRadian(positions[33][0],positions[33][1],positions[62][0],positions[62][1]);
-      
-      overlayCC.translate(tgtWidth*0.5, tgtWidth*0.5)
-      overlayCC.rotate(rad);
-      overlayCC.translate(tgtWidth*-0.5, tgtWidth*-0.5)
-      
-      //読み込んだimgをcanvas(c1)に貼付け
-      
-      var width = getDistance(positions[19][0],positions[19][1],positions[15][0],positions[15][1])*0.2;
-      console.log(width);
-      overlayCC.drawImage(vid,
-        (positions[0][0] +positions[14][0]) * 0.5+width,
-        (positions[0][1]+positions[14][1]) * 0.5-width*2,
-        width*12,width*12,
-        0,0,tgtWidth,tgtWidth); 
-      //canvasの状態を元に戻す
-      overlayCC.restore();
-      overlayCC.drawImage(faceMask,0,0,tgtWidth,tgtWidth); 
-      
-      
-    } ,100);
-    positionLoop();
-    
-  })
-  
-  
+  var camera = new FaceRecognition();
 </script>
 </html>

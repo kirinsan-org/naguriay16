@@ -24,7 +24,7 @@ class Player {
   }
 }
 
-let players = new Map();
+let players = new WeakMap();
 
 io.on('connection', (socket) => {
   console.log('connected', socket.id);
@@ -37,6 +37,7 @@ io.on('connection', (socket) => {
    */
   let anotherSocket = getAnotherSocket();
   if (anotherSocket) {
+    console.log('startBattle');
     anotherSocket.emit('startBattle', { face: 'img/kao.png', hair: 'img/hair.png' });
     socket.emit('startBattle', { face: 'img/kao2.png', hair: 'img/hair.png' });
   }

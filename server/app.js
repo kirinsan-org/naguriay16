@@ -21,6 +21,7 @@ class Player {
     this.rotation = [0, 0, 0, 1];
     this.leftHand = new Hand();
     this.rightHand = new Hand();
+    this.defencing = false;
   }
 }
 
@@ -54,10 +55,17 @@ io.on('connection', (socket) => {
     let anotherPlayer = players.get(anotherSocket);
     if (!anotherPlayer) return;
 
-    console.log(anotherPlayer);
+    // console.log(anotherPlayer);
 
     // TODO ダメージを与えるかどうかの判定処理
+    if (anotherPlayer.defencing) {
+      console.log('blocked');
+      return;
+    }
+
+    // ダメージ
     anotherPlayer.hp--;
+    console.log('damage', anotherPlayer);
 
     // 負けか、ダメージか
     if (anotherPlayer.hp === 0) {
@@ -77,6 +85,7 @@ io.on('connection', (socket) => {
     let player = players.get(socket);
     player.leftHand.position = data.leftHand.position;
     player.rightHand.position = data.rightHand.position;
+    player.defencing = data.defencing;
 
     // 対戦相手に自分の情報を通知
     let anotherSocket = getAnotherSocket();

@@ -1,10 +1,16 @@
 'use strict'
 
 const VELOCITY_PUNCH = -1000;
+const DEFENCE_X_DISTANCE = 1.5;
 
+/**
+ * punching: Boolean
+ * defencing: Boolean
+ */
 class LeapHandler {
   constructor(game) {
     this.game = game;
+    this.defencing = false;
     Leap.loop(this.loop.bind(this));
   }
 
@@ -16,6 +22,14 @@ class LeapHandler {
       let hand = frame.hands[i];
       this.processHand(hand);
     }
+
+    // 防御判定
+    if (frame.hands.length === 2
+      && Math.abs(this.game.player.leftHand.position.x - this.game.player.rightHand.position.x) < DEFENCE_X_DISTANCE) {
+      this.defencing = true;
+    } else {
+      this.defencing = false;
+    }
   }
 
   /**
@@ -24,7 +38,7 @@ class LeapHandler {
   processHand(hand) {
 
     // パンチ判定
-    if (!this.punching && hand.palmVelocity[2] < VELOCITY_PUNCH) {
+    if (!this.punching && !this.defencing && hand.palmVelocity[2] < VELOCITY_PUNCH) {
       console.log('attack');
       this.punching = true;
       setTimeout(_ => {
@@ -33,18 +47,17 @@ class LeapHandler {
     }
 
     // 自分の手の位置を更新する
-    switch (hand.type) {
-      case 'left': {
-        this.game.player.leftHand.position.x = hand.palmPosition[0] * 0.01;
-        this.game.player.leftHand.position.z = Math.min(0, Math.max(-2.5, hand.palmPosition[2] * 0.02));
-        break;
-      }
+    let playerHand = hand.type === 'left'
+      ? this.game.player.leftHand
+      : this.game.player.rightHand;
 
-      case 'right': {
-        this.game.player.rightHand.position.x = hand.palmPosition[0] * 0.01;
-        this.game.player.rightHand.position.z = Math.min(0, Math.max(-2.5, hand.palmPosition[2] * 0.02));
-        break;
-      }
+    playerHand.position.x = hand.palmPosition[0] * 0.01;
+
+    // 防御中はパンチできない
+    if (this.defencing) {
+      playerHand.position.z = -1;
+    } else {
+      playerHand.position.z = Math.min(0, Math.max(-2.5, hand.palmPosition[2] * 0.02));
     }
   }
 }

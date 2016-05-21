@@ -90,7 +90,9 @@ class SocketHandler {
       let rightHand = {
         position: [player.rightHand.position.x, player.rightHand.position.y, player.rightHand.position.z]
       };
-      this.socket.emit('updatePlayer', { leftHand, rightHand });
+
+      let defencing = this.leapHandler.defencing;
+      this.socket.emit('updatePlayer', { defencing, leftHand, rightHand });
     }
   }
 }

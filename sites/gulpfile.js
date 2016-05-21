@@ -16,7 +16,7 @@ gulp.task("ejs", function() {
     gulp.src(
         [DEV + "/ejs/**/*.ejs",'!' + DEV + "/ejs/**/_*.ejs"]
     )
-        .pipe(ejs())
+        .pipe(ejs(false,{"ext": ".html"}))
         .pipe(gulp.dest(PUBLIC))
         .pipe(browser.reload({stream:true}));
 });

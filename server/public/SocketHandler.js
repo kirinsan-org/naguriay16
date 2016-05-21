@@ -47,6 +47,14 @@ class SocketHandler {
         console.log('attacked');
       });
 
+      this.socket.on('lose', _ => {
+        alert('lose!');
+      });
+
+      this.socket.on('win', _ => {
+        alert('win!');
+      });
+
       // 自分の更新を送り続ける
       setInterval(_ => {
         this.updatePlayer();

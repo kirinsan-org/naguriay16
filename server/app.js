@@ -16,7 +16,7 @@ class Hand {
 
 class Player {
   constructor() {
-    this.hp = 100;
+    this.hp = 20;
     this.position = [0, 0, 0];
     this.rotation = [0, 0, 0, 1];
     this.leftHand = new Hand();
@@ -60,8 +60,9 @@ io.on('connection', (socket) => {
     anotherPlayer.hp--;
 
     // 負けか、ダメージか
-    if (anotherPlayer.hp <= 0) {
+    if (anotherPlayer.hp === 0) {
       anotherSocket.emit('lose');
+      socket.emit('win');
     } else {
       anotherSocket.emit('attacked');
     }

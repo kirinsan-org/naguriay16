@@ -38,6 +38,7 @@ var Motion = (function () {
 var FaceRecognition = (function () {
     function FaceRecognition() {
         var _this = this;
+        this.faceAngle = 0;
         this._$el = {};
         navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia;
         window.URL = window.URL || window.webkitURL;
@@ -72,6 +73,8 @@ var FaceRecognition = (function () {
     };
     FaceRecognition.prototype.recognition = function () {
         this._points = this._ctrack.getCurrentPosition();
+        this.faceAngle = (this._points[41][0] - this._points[1][0]) / (this._points[13][0] - this._points[1][0]) - 0.5;
+        ;
     };
     FaceRecognition.prototype.cropFace = function () {
         if (!this._points || !this._points.length)
@@ -84,12 +87,9 @@ var FaceRecognition = (function () {
         ctx.translate(tgtWidth * 0.5, tgtWidth * 0.5);
         ctx.rotate(rad);
         ctx.translate(tgtWidth * -0.5, tgtWidth * -0.5);
-        var width = this.getDistance(pos[19][0], pos[19][1], pos[15][0], pos[15][1])
-            * 0.2;
-        console.log(width);
+        var width = this.getDistance(pos[19][0], pos[19][1], pos[15][0], pos[15][1]) * 0.2;
         ctx.drawImage(this._$el.video, (pos[0][0] + pos[14][0]) * 0.5 + width, (pos[0][1] + pos[14][1]) * 0.5 - width * 2, width * 12, width * 12, 0, 0, tgtWidth, tgtWidth);
         ctx.restore();
-        ctx.drawImage(this._$el.faceMask, 0, 0, tgtWidth, tgtWidth);
     };
     return FaceRecognition;
 })();

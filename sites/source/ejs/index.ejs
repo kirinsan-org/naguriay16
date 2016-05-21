@@ -13,9 +13,8 @@
 </head>
 <body>
 
-<div id="title">
-  <div id="logo"></div>
-</div>
+<div id="title"><div id="logo"></div></div>
+
 <audio src="/sound/kirin.mp3" id="sound-logo"></audio>
 <audio src="/sound/title.mp3" id="title-sound"></audio>
 
@@ -38,20 +37,7 @@
 <img src="/images/face_mask.png" alt="" id="face-mask">
 <video id="videoel" width="400" height="300" preload="auto" loop></video>
 <canvas id="overlay" width="200" height="200"></canvas> 
-  <style>
-    #bits {
-      position: absolute;
-      left:50%;
-      top:50%;
-    }
-    #bits > div {
-      background-color:#000;
-      position: absolute;
-      width:4px;
-      height:4px;
-      border-radius:4px;
-    }
-  </style>
+
   <div id="bits">
     <div id="left"></div>
     <div id="right"></div>
@@ -60,6 +46,6 @@
 <script src="/js/main.js"></script>
 <script>
   var motion = new Motion();
-  var camera = new FaceRecognition();
+  var fr = new FaceRecognition();
 </script>
 </html>

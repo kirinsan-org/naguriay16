@@ -63,10 +63,10 @@ class Motion {
 class FaceRecognition {
   private _ctrack: any;
   private _points: any;
+  public faceAngle:number = 0;
   private _$el: any = {};
   
   constructor () {
-    
     navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia;
     window.URL = window.URL || window.webkitURL;
     
@@ -110,6 +110,7 @@ class FaceRecognition {
 
   recognition() {
     this._points = this._ctrack.getCurrentPosition();
+    this.faceAngle = (this._points[41][0] - this._points[1][0])/(this._points[13][0] - this._points[1][0])-0.5);
   }
   
   cropFace(){
@@ -131,14 +132,13 @@ class FaceRecognition {
     ctx.translate(tgtWidth*-0.5, tgtWidth*-0.5)
     
     //読み込んだimgをcanvas(c1)に貼付け
-    
     var width = this.getDistance(
-                pos[19][0],
-                pos[19][1],
-                pos[15][0],
-                pos[15][1])
-                * 0.2;
-    console.log(width);
+        pos[19][0],
+        pos[19][1],
+        pos[15][0],
+        pos[15][1]
+      ) * 0.2;
+
     ctx.drawImage(this._$el.video,
       (pos[0][0] +pos[14][0]) * 0.5+width,
       (pos[0][1]+pos[14][1]) * 0.5-width*2,
@@ -146,7 +146,7 @@ class FaceRecognition {
       0,0,tgtWidth,tgtWidth); 
     //canvasの状態を元に戻す
     ctx.restore();
-    ctx.drawImage(this._$el.faceMask,0,0,tgtWidth,tgtWidth); 
+    // ctx.drawImage(this._$el.faceMask,0,0,tgtWidth,tgtWidth); 
     
   }
 }

@@ -6,6 +6,20 @@ body {
   background-color: #ccc;
 }
 
+#bits {
+  position: absolute;
+  left:50%;
+  top:50%;
+  > div {
+    background-color:#000;
+    position: absolute;
+    width:4px;
+    height:4px;
+    border-radius:4px;
+  }
+}
+
+
 #title {
   $width:500px;
   $height:200px;

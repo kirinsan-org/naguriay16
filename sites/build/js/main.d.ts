@@ -18,6 +18,7 @@ declare class Motion {
 declare class FaceRecognition {
     private _ctrack;
     private _points;
+    faceAngle: number;
     private _$el;
     constructor();
     getRadian(x: any, y: any, x2: any, y2: any): number;

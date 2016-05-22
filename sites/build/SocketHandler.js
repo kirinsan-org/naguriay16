@@ -60,7 +60,12 @@ class SocketHandler {
 
       this.socket.on('endBattle', result => {
         console.log('endBattle', result);
-        alert('END!');
+        if (result.win) {
+          $('#youwin').show();
+        } else {
+          $('#youlose').show();
+        }
+        // alert('END!');
       });
 
       // エラー通知

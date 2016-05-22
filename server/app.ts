@@ -145,7 +145,7 @@ io.on('connection', (socket) => {
     console.log('startUpdateAnotherPlayer');
     clearInterval(intervalId);
 
-    let anotherPlayer = battlePlayers.get(player);
+    let anotherPlayer: Player = battlePlayers.get(player);
 
     intervalId = setInterval(_ => {
       socket.emit('updateEnemy', {
@@ -171,7 +171,7 @@ io.on('connection', (socket) => {
     console.log('disconnected', socket.id);
 
     // 対戦相手に切断を通知
-    let anotherPlayer = battlePlayers.get(player);
+    let anotherPlayer: Player = battlePlayers.get(player);
     if (anotherPlayer) {
       let anotherSocket = playerSocketMap.get(anotherPlayer);
       anotherSocket.emit('remoteError');

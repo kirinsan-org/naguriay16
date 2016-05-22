@@ -2,7 +2,6 @@ var gulp = require("gulp");
 
 var ejs = require("gulp-ejs"),
     sass = require("gulp-sass"),
-    pleeease = require("gulp-pleeease"),
     browser = require("browser-sync"),
     minifyCss  = require('gulp-minify-css'),
     typescript = require('gulp-tsc'), // TypeScript Compiler
@@ -30,12 +29,6 @@ gulp.task("style", function() {
             compass : true,
             "sourcemap=none": true,
             minifier: false,
-        }))
-        .pipe(pleeease({
-            fallbacks: {
-                autoprefixer: ["last 2 version", "ie 9"],
-            },
-            minifier: true//圧縮を有効
         }))
         .pipe(gulp.dest(PUBLIC + "/css"))
         .pipe(browser.reload({stream:true}));

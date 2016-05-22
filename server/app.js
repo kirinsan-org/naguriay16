@@ -5,7 +5,8 @@ const server = require('http').Server(app);
 const io = require('socket.io')(server);
 
 // 静的ファイルホスティング
-app.use(express.static(__dirname + '/public'));
+
+app.use(express.static( __dirname.replace("/server","/sites/build") ));
 
 class Hand {
   constructor() {

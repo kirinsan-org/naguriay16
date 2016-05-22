@@ -11,8 +11,8 @@ class SocketHandler {
       this.socket = io.connect();
 
       // TODO dummy
-      this.setFace('img/kao.png');
-      this.ready();
+      // this.setFace('img/kao.png');
+      // this.ready();
 
       /**
        * 対戦相手が見つかった時

@@ -19,20 +19,9 @@
   <a href="#" id="btn-shutter" ><i class="fa fa-camera" aria-hidden="true"></i></a>
 </div>
 
-<div class="cube-wrap" id="face-preview">
-	<div class="cube">
-		<div class="front">front</div>
-		<div class="back">back</div>
-		<div class="top">top</div>
-		<div class="bottom">bottom</div>
-		<div class="left">left</div>
-		<div class="right">right</div>
-	</div>
-</div>
 
 <div id="intro"><div id="logo"></div></div>
 <div id="game"><div id="title-image"></div></div>
-
 
 
 <audio src="/sound/kirin.mp3" id="sound-logo"></audio>
@@ -51,10 +40,6 @@
 
 <img src="/images/fire.gif" alt="" id="face-fire-fx">
 
-  <div id="bits">
-    <div id="left"></div>
-    <div id="right"></div>
-  </div>
 </body>
 
 <canvas id="mainstage"></canvas>
@@ -74,7 +59,7 @@
 <script src="/js/ojlib.js"></script>
 <script src="main.js"></script>
 <script>
-var motion = new Motion();
+//var motion = new Motion();
 var fr = new FaceRecognition();
 var faceTexture = null;
 
@@ -97,8 +82,12 @@ function gameStart(){
       socketHandler.setFace(faceTexture);
       socketHandler.ready();
       
+      $("#photobooth").fadeOut();
+      $("#face-fire-fx").fadeOut();
+      
+      
       $("#strobe").fadeOut();
-      this.pollingRate(500);
+      this.pollingRate(800);
     },100);
   }
   $("#btn-shutter").on("click",function(){

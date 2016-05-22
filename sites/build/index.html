@@ -80,6 +80,7 @@ var faceTexture = null;
 function gameStart(){
   $("#intro").hide();
   $("#game").hide();
+  l
 }
   
   function strobe(){
@@ -87,7 +88,11 @@ function gameStart(){
     $("#shutter-sound").get(0).play();
     setTimeout(function(){
       faceTexture = fr.getFaceTexture();
-      console.log(faceTexture);
+            
+      // サーバーに顔写真を送り、準備完了であることを伝える
+      socketHandler.setFace(faceTexture);
+      socketHandler.ready();
+      
       $("#strobe").fadeOut();
       this.pollingRate(500);
     },100);

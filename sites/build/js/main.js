@@ -44,7 +44,7 @@ var FaceRecognition = (function () {
         window.URL = window.URL || window.webkitURL;
         this._$el.video = document.getElementById('videoel');
         this._$el.faceMask = document.getElementById('face-mask');
-        this._$el.canvasCrop = document.getElementById('overlay');
+        this._$el.canvasCrop = document.getElementById('myface');
         this._$el.cropCtx = this._$el.canvasCrop.getContext('2d');
         this._ctrack = new clm.tracker();
         this._ctrack.init(pModel);
@@ -90,6 +90,17 @@ var FaceRecognition = (function () {
         var width = this.getDistance(pos[19][0], pos[19][1], pos[15][0], pos[15][1]) * 0.2;
         ctx.drawImage(this._$el.video, (pos[0][0] + pos[14][0]) * 0.5 + width, (pos[0][1] + pos[14][1]) * 0.5 - width * 2, width * 12, width * 12, 0, 0, tgtWidth, tgtWidth);
         ctx.restore();
+        ctx.drawImage(this._$el.faceMask, 0, 0, tgtWidth, tgtWidth);
+    };
+    FaceRecognition.prototype.getFaceTexture = function () {
+        var $c = $("<canvas />");
+        $c.attr({ "width": 1200, "height": 200 });
+        var $img = $("#face-texture");
+        var ctx = $c.get(0).getContext('2d');
+        ctx.drawImage($img.get(0), 0, 0);
+        ctx.drawImage(this._$el.canvasCrop, 200, 0);
+        var data = $c.get(0).toDataURL("image/jpeg", 0.3);
+        return data;
     };
     return FaceRecognition;
 })();

@@ -1,0 +1,19 @@
+{
+  "name": "naguriay-messaging",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "supervisor": "supervisor app.js",
+    "browserSync": "browser-sync start --proxy http://localhost:4040 --files **"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.13.4",
+    "socket.io": "^1.4.6"
+  },
+  "devDependencies": {
+    "supervisor": "^0.10.0"
+  }
+}

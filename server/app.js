@@ -10,89 +10,121 @@ app.use(express.static(__dirname + '/public'));
 class Hand {
   constructor() {
     this.position = [0, 0, 0];
-    this.rotation = [0, 0, 0, 1];
   }
 }
 
 class Player {
   constructor() {
     this.hp = 20;
-    this.position = [0, 0, 0];
-    this.rotation = [0, 0, 0, 1];
+    this.face = null; // String
+    this.hair = 'img/hair.png'; // String
+    this.ready = false;
     this.leftHand = new Hand();
     this.rightHand = new Hand();
-    this.defencing = false;
+    this.guard = false;
   }
 }
 
-let players = new WeakMap();
+let players = new WeakMap(); // <Socket, Player>
+let battlePlayers = new Map(); // <Player, Player>
+let playerSocketMap = new Map(); // <Player, Socket>
 
 io.on('connection', (socket) => {
   console.log('connected', socket.id);
 
   let player = new Player();
   players.set(socket, player);
+  playerSocketMap.set(player, socket);
 
-  /**
-   * 対戦相手がいたらマッチング
-   */
-  let anotherSocket = getAnotherSocket();
-  if (anotherSocket) {
-    console.log('startBattle');
-    anotherSocket.emit('startBattle', { face: 'img/kao.png', hair: 'img/hair.png' });
-    socket.emit('startBattle', { face: 'img/kao2.png', hair: 'img/hair.png' });
+  socket.on('setFace', face => {
+    console.log('setFace', socket.id, face);
+    player.face = face
+  });
+  socket.on('ready', onReady);
+  socket.on('attack', onAttack);
+  socket.on('guard', onGuard);
+  socket.on('updatePlayer', onUpdatePlayer);
+
+  function onReady() {
+    console.log('ready', socket.id);
+    player.ready = true;
+
+    // 他のready=trueかつbattlePlayers.get(player)===nullなPlayerがいればマッチング
+    for (let socketId in io.sockets.connected) {
+      if (socketId !== socket.id) {
+        let anotherSocket = io.sockets.connected[socketId];
+        let anotherPlayer = players.get(anotherSocket);
+
+        if (anotherPlayer.ready && !battlePlayers.get(player)) {
+          console.log('matched!', player, anotherPlayer);
+
+          // マッチング
+          battlePlayers.set(player, anotherPlayer);
+          battlePlayers.set(anotherPlayer, player);
+
+          // ゲーム開始
+          socket.emit('startBattle', anotherPlayer);
+          anotherSocket.emit('startBattle', player);
+
+          startUpdateAnotherPlayer();
+        }
+      }
+    }
   }
 
-  /**
-   * 攻撃を受けた時
-   */
-  socket.on('attack', _ => {
+  function onAttack(callback) {
     console.log('attack');
 
-    let anotherSocket = getAnotherSocket();
-    if (!anotherSocket) return;
-
-    let anotherPlayer = players.get(anotherSocket);
+    let anotherPlayer = battlePlayers.get(player);
     if (!anotherPlayer) return;
 
-    // console.log(anotherPlayer);
-
-    // TODO ダメージを与えるかどうかの判定処理
-    if (anotherPlayer.defencing) {
+    // 相手が防御していたら失敗
+    if (anotherPlayer.guard) {
       console.log('blocked');
+      callback({ success: false });
       return;
     }
 
-    // ダメージ
+    // そうでなければ相手にダメージ
     anotherPlayer.hp--;
     console.log('damage', anotherPlayer);
+    callback({ success: true });
 
-    // 負けか、ダメージか
+    // - 相手のHPが0なら試合終了
     if (anotherPlayer.hp === 0) {
-      anotherSocket.emit('lose');
-      socket.emit('win');
-    } else {
-      anotherSocket.emit('attacked');
+      socket.emit('endBattle', { win: true });
+      anotherPlayer.socket.emit('endBattle', { win: false });
     }
-  });
+  }
 
-  /**
-   * プレイヤー情報を受け取った時、相手に伝達する
-   */
-  socket.on('updatePlayer', data => {
+  function onGuard(guardState) {
+    player.guard = guardState;
+  }
+
+  function onUpdatePlayer(data) {
     // console.log('updatePlayer', data);
 
-    let player = players.get(socket);
+    // 手の位置を更新
     player.leftHand.position = data.leftHand.position;
     player.rightHand.position = data.rightHand.position;
-    player.defencing = data.defencing;
+  }
 
-    // 対戦相手に自分の情報を通知
-    let anotherSocket = getAnotherSocket();
-    if (!anotherSocket) return;
+  let intervalId;
 
-    anotherSocket.emit('updateEnemy', player);
-  });
+  function startUpdateAnotherPlayer() {
+    console.log('startUpdateAnotherPlayer');
+    clearInterval(intervalId);
+
+    let anotherPlayer = battlePlayers.get(player);
+
+    intervalId = setInterval(_ => {
+      socket.emit('updateEnemy', anotherPlayer);
+    }, 100);
+  }
+
+  function stopUpdateAnotherPlayer() {
+    clearInterval(intervalId);
+  }
 
   /**
    * コネクション切断時にリソースを開放する
@@ -100,24 +132,19 @@ io.on('connection', (socket) => {
   socket.on('disconnect', _ => {
     console.log('disconnected', socket.id);
 
+    // 対戦相手に切断を通知
+    let anotherPlayer = battlePlayers.get(player);
+    if (anotherPlayer) {
+      let anotherSocket = playerSocketMap.get(anotherPlayer);
+      anotherSocket.emit('remoteError');
+      battlePlayers.delete(anotherPlayer);
+    }
+
+    battlePlayers.delete(player);
     players.delete(socket);
+    playerSocketMap.delete(player);
+    player = null;
   });
-
-  function getAnotherSocket() {
-    let id = getAnotherId();
-    if (id) {
-      return io.sockets.connected[id];
-    }
-    return null;
-  }
-
-  function getAnotherId() {
-    let myId = socket.id;
-    for (let id in io.sockets.connected) {
-      if (id !== myId) return id;
-    }
-    return null;
-  }
 });
 
 server.listen(4040);

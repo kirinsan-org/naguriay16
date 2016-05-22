@@ -131,7 +131,6 @@ class Game extends BaseGame {
   setEnemyHead(faceUrl, hairUrl) {
     this.enemy.head.setFaceTextureFromUrl(faceUrl);
     this.enemy.head.setHairTextureFromUrl(hairUrl);
-    this.enemy.visible = true;
   }
 
   setLeftHandPosition(x, y, z) {

@@ -82,6 +82,11 @@
     $("#shutter-sound").get(0).play();
     setTimeout(function(){
       faceTexture = fr.getFaceTexture();
+      
+      // サーバーに顔写真を送り、準備完了であることを伝える
+      socketHandler.setFace(faceTexture);
+      socketHandler.ready();
+      
       console.log(faceTexture);
       $("#strobe").fadeOut();
     },100);

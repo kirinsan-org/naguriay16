@@ -77,6 +77,11 @@
 var motion = new Motion();
 var fr = new FaceRecognition();
 var faceTexture = null;
+
+setInterval(function(){
+  sendHeadRotate(fr.faceAngle);
+},100)
+
 function gameStart(){
   $("#intro").hide();
   $("#game").hide();

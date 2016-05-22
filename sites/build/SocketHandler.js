@@ -97,6 +97,16 @@ class SocketHandler {
       });
     }
   }
+  
+  /**
+   * 
+   */
+  sendHeadRotate(axis) {
+    if (window.io) {
+      this.socket.emit('headRotate', axis);
+    }
+  }
+  
 
   updatePlayer() {
     if (window.io) {

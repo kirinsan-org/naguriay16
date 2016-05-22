@@ -82,7 +82,6 @@ class FaceRecognition {
     this._ctrack.start(this._$el.video);
     
     this.startCamera();
-    
     this.pollingRate(); 
   }
   

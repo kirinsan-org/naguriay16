@@ -6,12 +6,6 @@
     <link rel="stylesheet" href="/css/index.css">
     <link rel="stylesheet" href="/css/font-awesome.css">
     <link rel="stylesheet" href="/css/animate.css">
-    <script src="https://code.jquery.com/jquery-2.2.4.js"></script>
-    <script src="/lib/clmtrackr.js"></script>
-    <script src="/lib/model_pca_20_svm.js"></script>
-    
-    <!-- <script src="https://js.leapmotion.com/leap-0.6.4.min.js"></script> -->
-    <script src="https://js.leapmotion.com/leap-0.6.4.js"></script>
 </head>
 <body>
 <div class="button-units" id="bottons-start">
@@ -62,9 +56,24 @@
     <div id="right"></div>
   </div>
 </body>
-<script src="/js/main.js"></script>
+
+<canvas id="mainstage"></canvas>
+<script src="https://code.jquery.com/jquery-2.2.4.js"></script>
+<script src="/lib/clmtrackr.js"></script>
+<script src="/lib/model_pca_20_svm.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script src="lib/leap-0.6.4.min.js"></script>
+<script src="lib/three.min.js"></script>
+<script src="createCubeGeometry.js"></script>
+<script src="BaseGame.js"></script>
+<script src="Game.js"></script>
+<script src="LeapHandler.js"></script>
+<script src="SocketHandler.js"></script>
+
+<script src="/js/ojlib.js"></script>
+<script src="main.js"></script>
 <script>
-  var motion = new Motion();
+   var motion = new Motion();
   var fr = new FaceRecognition();
   var faceTexture = null;
   
@@ -106,6 +115,5 @@ $("#btn-start-game").on({"click":function(){
   $("#bottons-takephoto").addClass("active")
   return false;
 }});
-  
 </script>
 </html>

@@ -8,12 +8,32 @@
   "suppressTaskName": true,
   "tasks": [
     {
+      "taskName": "start",
+      "args": [
+        "start"
+      ],
+      "isBuildCommand": true
+    },
+    {
+      "taskName": "tsc",
+      "args": [
+        "run",
+        "tsc"
+      ]
+    },
+    {
+      "taskName": "tsc:w",
+      "args": [
+        "run",
+        "tsc:w"
+      ]
+    },
+    {
       "taskName": "supervisor",
       "args": [
         "run",
         "supervisor"
-      ],
-      "isBuildCommand": true
+      ]
     },
     {
       "taskName": "browserSync",

@@ -1,8 +1,21 @@
 const express = require('express');
 const app = express();
-const server = require('http').Server(app);
-const io = require('socket.io')(server);
+// const server = require('http').Server(app);
+// const io = require('socket.io')(server);
 const path = require('path');
+
+const https = require('https');
+const fs = require('fs');
+let privateKey = fs.readFileSync('server.key', 'utf8');
+let certificate = fs.readFileSync('server.cert', 'utf8');
+
+let server = https.createServer({
+  key: privateKey,
+  cert: certificate
+}, app);
+const io = require('socket.io')(server);
+server.listen(443);
+
 declare const WeakMap: any;
 declare const Map: any;
 

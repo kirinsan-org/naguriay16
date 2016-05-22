@@ -1,8 +1,18 @@
 var express = require('express');
 var app = express();
-var server = require('http').Server(app);
-var io = require('socket.io')(server);
+// const server = require('http').Server(app);
+// const io = require('socket.io')(server);
 var path = require('path');
+var https = require('https');
+var fs = require('fs');
+var privateKey = fs.readFileSync('server.key', 'utf8');
+var certificate = fs.readFileSync('server.cert', 'utf8');
+var server = https.createServer({
+    key: privateKey,
+    cert: certificate
+}, app);
+var io = require('socket.io')(server);
+server.listen(443);
 // 静的ファイルホスティング
 app.use(express.static(path.join(__dirname, '..', 'sites', 'build')));
 var Hand = (function () {

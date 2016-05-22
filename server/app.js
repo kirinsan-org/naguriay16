@@ -89,7 +89,10 @@ io.on('connection', function (socket) {
         // - 相手のHPが0なら試合終了
         if (anotherPlayer.hp === 0) {
             socket.emit('endBattle', { win: true });
-            anotherPlayer.socket.emit('endBattle', { win: false });
+            var anotherSocket = playerSocketMap.get(anotherPlayer);
+            if (anotherSocket) {
+                anotherSocket.emit('endBattle', { win: false });
+            }
         }
     }
     function onGuard(guardState) {

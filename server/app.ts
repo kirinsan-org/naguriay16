@@ -30,7 +30,7 @@ class Hand {
 }
 
 class Player {
-  hp: Number;
+  hp: number;
   face: String;
   hair: String;
   ready: Boolean;
@@ -80,7 +80,7 @@ io.on('connection', (socket) => {
     for (let socketId in io.sockets.connected) {
       if (socketId !== socket.id) {
         let anotherSocket = io.sockets.connected[socketId];
-        let anotherPlayer = players.get(anotherSocket);
+        let anotherPlayer: Player = players.get(anotherSocket);
 
         if (anotherPlayer.ready && !battlePlayers.get(player)) {
           // console.log('matched!', player, anotherPlayer);
@@ -102,7 +102,7 @@ io.on('connection', (socket) => {
   function onAttack(callback) {
     console.log('attack');
 
-    let anotherPlayer = battlePlayers.get(player);
+    let anotherPlayer: Player = battlePlayers.get(player);
     if (!anotherPlayer) return;
 
     // 相手が防御していたら失敗
@@ -120,7 +120,10 @@ io.on('connection', (socket) => {
     // - 相手のHPが0なら試合終了
     if (anotherPlayer.hp === 0) {
       socket.emit('endBattle', { win: true });
-      anotherPlayer.socket.emit('endBattle', { win: false });
+      let anotherSocket = playerSocketMap.get(anotherPlayer);
+      if (anotherSocket) {
+        anotherSocket.emit('endBattle', { win: false });
+      }
     }
   }
 

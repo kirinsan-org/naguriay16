@@ -1,8 +1,18 @@
 var express = require('express');
 var app = express();
-var server = require('http').Server(app);
-var io = require('socket.io')(server);
+// const server = require('http').Server(app);
+// const io = require('socket.io')(server);
 var path = require('path');
+var https = require('https');
+var fs = require('fs');
+var privateKey = fs.readFileSync('server.key', 'utf8');
+var certificate = fs.readFileSync('server.cert', 'utf8');
+var server = https.createServer({
+    key: privateKey,
+    cert: certificate
+}, app);
+var io = require('socket.io')(server);
+server.listen(443);
 // 静的ファイルホスティング
 app.use(express.static(path.join(__dirname, '..', 'sites', 'build')));
 var Hand = (function () {
@@ -13,7 +23,7 @@ var Hand = (function () {
 }());
 var Player = (function () {
     function Player() {
-        this.hp = 20;
+        this.hp = 10;
         this.face = null; // 顔画像URL
         this.hair = 'img/hair.png'; // 髪画像URL
         this.ready = false; // 対戦準備ができたかどうか
@@ -32,13 +42,14 @@ io.on('connection', function (socket) {
     players.set(socket, player);
     playerSocketMap.set(player, socket);
     socket.on('setFace', function (face) {
-        console.log('setFace', socket.id, face);
+        // console.log('setFace', socket.id, face);
         player.face = face;
     });
     socket.on('ready', onReady);
     socket.on('attack', onAttack);
     socket.on('guard', onGuard);
     socket.on('updatePlayer', onUpdatePlayer);
+    socket.on('headRotate', onHeadRotate);
     function onReady() {
         console.log('ready', socket.id);
         player.ready = true;
@@ -48,7 +59,7 @@ io.on('connection', function (socket) {
                 var anotherSocket = io.sockets.connected[socketId];
                 var anotherPlayer = players.get(anotherSocket);
                 if (anotherPlayer.ready && !battlePlayers.get(player)) {
-                    console.log('matched!', player, anotherPlayer);
+                    // console.log('matched!', player, anotherPlayer);
                     // マッチング
                     battlePlayers.set(player, anotherPlayer);
                     battlePlayers.set(anotherPlayer, player);
@@ -73,12 +84,15 @@ io.on('connection', function (socket) {
         }
         // そうでなければ相手にダメージ
         anotherPlayer.hp--;
-        console.log('damage', anotherPlayer);
+        // console.log('damage', anotherPlayer);
         callback({ success: true });
         // - 相手のHPが0なら試合終了
         if (anotherPlayer.hp === 0) {
             socket.emit('endBattle', { win: true });
-            anotherPlayer.socket.emit('endBattle', { win: false });
+            var anotherSocket = playerSocketMap.get(anotherPlayer);
+            if (anotherSocket) {
+                anotherSocket.emit('endBattle', { win: false });
+            }
         }
     }
     function onGuard(guardState) {
@@ -96,11 +110,18 @@ io.on('connection', function (socket) {
         clearInterval(intervalId);
         var anotherPlayer = battlePlayers.get(player);
         intervalId = setInterval(function (_) {
-            socket.emit('updateEnemy', anotherPlayer);
+            socket.emit('updateEnemy', {
+                headRotation: anotherPlayer.headRotation,
+                leftHand: anotherPlayer.leftHand,
+                rightHand: anotherPlayer.rightHand
+            });
         }, 100);
     }
     function stopUpdateAnotherPlayer() {
         clearInterval(intervalId);
+    }
+    function onHeadRotate(axis) {
+        player.headRotation = axis;
     }
     /**
      * コネクション切断時にリソースを開放する

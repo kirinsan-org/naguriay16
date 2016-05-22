@@ -1,8 +1,21 @@
 const express = require('express');
 const app = express();
-const server = require('http').Server(app);
-const io = require('socket.io')(server);
+// const server = require('http').Server(app);
+// const io = require('socket.io')(server);
 const path = require('path');
+
+const https = require('https');
+const fs = require('fs');
+let privateKey = fs.readFileSync('server.key', 'utf8');
+let certificate = fs.readFileSync('server.cert', 'utf8');
+
+let server = https.createServer({
+  key: privateKey,
+  cert: certificate
+}, app);
+const io = require('socket.io')(server);
+server.listen(443);
+
 declare const WeakMap: any;
 declare const Map: any;
 
@@ -17,16 +30,17 @@ class Hand {
 }
 
 class Player {
-  hp: Number;
+  hp: number;
   face: String;
   hair: String;
   ready: Boolean;
   leftHand: Hand;
   rightHand: Hand;
   guard: Boolean;
+  headRotation: Number;
 
   constructor() {
-    this.hp = 20;
+    this.hp = 10;
     this.face = null;           // 顔画像URL
     this.hair = 'img/hair.png'; // 髪画像URL
     this.ready = false;         // 対戦準備ができたかどうか
@@ -48,7 +62,7 @@ io.on('connection', (socket) => {
   playerSocketMap.set(player, socket);
 
   socket.on('setFace', face => {
-    console.log('setFace', socket.id, face);
+    // console.log('setFace', socket.id, face);
     player.face = face
   });
 
@@ -56,6 +70,7 @@ io.on('connection', (socket) => {
   socket.on('attack', onAttack);
   socket.on('guard', onGuard);
   socket.on('updatePlayer', onUpdatePlayer);
+  socket.on('headRotate', onHeadRotate);
 
   function onReady() {
     console.log('ready', socket.id);
@@ -65,10 +80,10 @@ io.on('connection', (socket) => {
     for (let socketId in io.sockets.connected) {
       if (socketId !== socket.id) {
         let anotherSocket = io.sockets.connected[socketId];
-        let anotherPlayer = players.get(anotherSocket);
+        let anotherPlayer: Player = players.get(anotherSocket);
 
         if (anotherPlayer.ready && !battlePlayers.get(player)) {
-          console.log('matched!', player, anotherPlayer);
+          // console.log('matched!', player, anotherPlayer);
 
           // マッチング
           battlePlayers.set(player, anotherPlayer);
@@ -87,7 +102,7 @@ io.on('connection', (socket) => {
   function onAttack(callback) {
     console.log('attack');
 
-    let anotherPlayer = battlePlayers.get(player);
+    let anotherPlayer: Player = battlePlayers.get(player);
     if (!anotherPlayer) return;
 
     // 相手が防御していたら失敗
@@ -99,13 +114,16 @@ io.on('connection', (socket) => {
 
     // そうでなければ相手にダメージ
     anotherPlayer.hp--;
-    console.log('damage', anotherPlayer);
+    // console.log('damage', anotherPlayer);
     callback({ success: true });
 
     // - 相手のHPが0なら試合終了
     if (anotherPlayer.hp === 0) {
       socket.emit('endBattle', { win: true });
-      anotherPlayer.socket.emit('endBattle', { win: false });
+      let anotherSocket = playerSocketMap.get(anotherPlayer);
+      if (anotherSocket) {
+        anotherSocket.emit('endBattle', { win: false });
+      }
     }
   }
 
@@ -127,15 +145,23 @@ io.on('connection', (socket) => {
     console.log('startUpdateAnotherPlayer');
     clearInterval(intervalId);
 
-    let anotherPlayer = battlePlayers.get(player);
+    let anotherPlayer: Player = battlePlayers.get(player);
 
     intervalId = setInterval(_ => {
-      socket.emit('updateEnemy', anotherPlayer);
+      socket.emit('updateEnemy', {
+        headRotation: anotherPlayer.headRotation,
+        leftHand: anotherPlayer.leftHand,
+        rightHand: anotherPlayer.rightHand
+      });
     }, 100);
   }
 
   function stopUpdateAnotherPlayer() {
     clearInterval(intervalId);
+  }
+
+  function onHeadRotate(axis: number) {
+    player.headRotation = axis;
   }
 
   /**
@@ -145,7 +171,7 @@ io.on('connection', (socket) => {
     console.log('disconnected', socket.id);
 
     // 対戦相手に切断を通知
-    let anotherPlayer = battlePlayers.get(player);
+    let anotherPlayer: Player = battlePlayers.get(player);
     if (anotherPlayer) {
       let anotherSocket = playerSocketMap.get(anotherPlayer);
       anotherSocket.emit('remoteError');

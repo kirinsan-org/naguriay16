@@ -66,7 +66,7 @@ var fr = new FaceRecognition();
 var faceTexture = null;
 
 setInterval(function(){
-  sendHeadRotate(fr.faceAngle);
+  socketHandler.sendHeadRotate(fr.faceAngle);
 },100)
 
 function gameStart(){

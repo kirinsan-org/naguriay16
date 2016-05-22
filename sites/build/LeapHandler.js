@@ -41,7 +41,7 @@ class LeapHandler {
     // パンチ状態でない、ガード状態でないならパンチ判定
     if (!this.punching && !this.guard && hand.palmVelocity[2] < VELOCITY_PUNCH) {
       console.log('attack');
-      this.socketHandler.sendAttack();
+      socketHandler.sendAttack();
 
       // 攻撃してから一定時間は再攻撃しない
       this.punching = true;

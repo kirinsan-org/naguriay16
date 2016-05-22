@@ -3,7 +3,9 @@ body, html {
   margin: 0;
   padding: 0;
   width: 100px;
-  height: 100%; }
+  height: 100%;
+  background-image: url(/images/akichi.png);
+  background-size: cover; }
 
 body {
   background-color: #ccc; }

@@ -24,6 +24,7 @@ class SocketHandler {
       this.socket.on('startBattle', enemyData => {
         this.game.setEnemyHead(enemyData.face, enemyData.hair);
         this.game.enemy.visible = true;
+        window.gameStart();
       });
 
       this.socket.on('damage', _ => {

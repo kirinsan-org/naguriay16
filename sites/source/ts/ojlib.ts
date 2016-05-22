@@ -65,6 +65,8 @@ class FaceRecognition {
   private _points: any;
   public faceAngle:number = 0;
   private _$el: any = {};
+  private _pollingRate = 200;
+  private _timer = null;
   
   constructor () {
     navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia;
@@ -81,10 +83,17 @@ class FaceRecognition {
     
     this.startCamera();
     
-    setInterval(()=>{
+    this.pollingRate(); 
+  }
+  
+  pollingRate(interval?) {
+    clearInterval(this._timer);
+    
+    var intv = ( !!interval ) ? interval : this._pollingRate;
+    this._timer = setInterval(()=>{
       this.recognition();
       this.cropFace();
-    })
+    },intv);
   }
   
   getRadian(x, y, x2, y2) { 

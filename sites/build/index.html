@@ -58,6 +58,7 @@
 </body>
 
 <canvas id="mainstage"></canvas>
+
 <script src="https://code.jquery.com/jquery-2.2.4.js"></script>
 <script src="/lib/clmtrackr.js"></script>
 <script src="/lib/model_pca_20_svm.js"></script>
@@ -73,22 +74,22 @@
 <script src="/js/ojlib.js"></script>
 <script src="main.js"></script>
 <script>
-   var motion = new Motion();
-  var fr = new FaceRecognition();
-  var faceTexture = null;
+var motion = new Motion();
+var fr = new FaceRecognition();
+var faceTexture = null;
+function gameStart(){
+  $("#intro").hide();
+  $("#game").hide();
+}
   
   function strobe(){
     $("#strobe").show();
     $("#shutter-sound").get(0).play();
     setTimeout(function(){
       faceTexture = fr.getFaceTexture();
-      
-      // サーバーに顔写真を送り、準備完了であることを伝える
-      socketHandler.setFace(faceTexture);
-      socketHandler.ready();
-      
       console.log(faceTexture);
       $("#strobe").fadeOut();
+      this.pollingRate(500);
     },100);
   }
   $("#btn-shutter").on("click",function(){

@@ -23,7 +23,7 @@ var Hand = (function () {
 }());
 var Player = (function () {
     function Player() {
-        this.hp = 20;
+        this.hp = 10;
         this.face = null; // 顔画像URL
         this.hair = 'img/hair.png'; // 髪画像URL
         this.ready = false; // 対戦準備ができたかどうか
@@ -42,7 +42,7 @@ io.on('connection', function (socket) {
     players.set(socket, player);
     playerSocketMap.set(player, socket);
     socket.on('setFace', function (face) {
-        console.log('setFace', socket.id, face);
+        // console.log('setFace', socket.id, face);
         player.face = face;
     });
     socket.on('ready', onReady);
@@ -59,7 +59,7 @@ io.on('connection', function (socket) {
                 var anotherSocket = io.sockets.connected[socketId];
                 var anotherPlayer = players.get(anotherSocket);
                 if (anotherPlayer.ready && !battlePlayers.get(player)) {
-                    console.log('matched!', player, anotherPlayer);
+                    // console.log('matched!', player, anotherPlayer);
                     // マッチング
                     battlePlayers.set(player, anotherPlayer);
                     battlePlayers.set(anotherPlayer, player);
@@ -84,7 +84,7 @@ io.on('connection', function (socket) {
         }
         // そうでなければ相手にダメージ
         anotherPlayer.hp--;
-        console.log('damage', anotherPlayer);
+        // console.log('damage', anotherPlayer);
         callback({ success: true });
         // - 相手のHPが0なら試合終了
         if (anotherPlayer.hp === 0) {

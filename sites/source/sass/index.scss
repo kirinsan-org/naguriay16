@@ -197,3 +197,25 @@ body {
   
 }
  
+ .result {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 2000;
+    display: none;
+    line-height: 100vh;
+    /* background-color: #fff; */
+    color: #fff;
+    font-size: 160px;
+    text-align: center;
+ }
+ 
+ #youlose {
+   background-color: red;
+ }
+ 
+ #youwin {
+   background-color: blue;
+ }

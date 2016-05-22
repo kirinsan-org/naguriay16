@@ -107,7 +107,11 @@ io.on('connection', function (socket) {
         clearInterval(intervalId);
         var anotherPlayer = battlePlayers.get(player);
         intervalId = setInterval(function (_) {
-            socket.emit('updateEnemy', { leftHand: anotherPlayer.leftHand, rightHand: anotherPlayer.rightHand });
+            socket.emit('updateEnemy', {
+                headRotation: anotherPlayer.headRotation,
+                leftHand: anotherPlayer.leftHand,
+                rightHand: anotherPlayer.rightHand
+            });
         }, 100);
     }
     function stopUpdateAnotherPlayer() {

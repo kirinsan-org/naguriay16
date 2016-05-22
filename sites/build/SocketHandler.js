@@ -44,6 +44,7 @@ class SocketHandler {
        */
       this.socket.on('updateEnemy', enemyData => {
         // console.log('updateEnemy', enemyData);
+        this.game.enemy.head.rotation.y = -enemyData.headRotation * Math.PI / 2;
         this.game.enemy.leftHand.position.x = -enemyData.leftHand.position[0];
         this.game.enemy.leftHand.position.y = -enemyData.leftHand.position[1];
         this.game.enemy.leftHand.position.z = -enemyData.leftHand.position[2];

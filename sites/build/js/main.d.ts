@@ -26,4 +26,5 @@ declare class FaceRecognition {
     startCamera(): void;
     recognition(): void;
     cropFace(): boolean;
+    getFaceTexture(): any;
 }

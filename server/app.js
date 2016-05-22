@@ -39,6 +39,7 @@ io.on('connection', function (socket) {
     socket.on('attack', onAttack);
     socket.on('guard', onGuard);
     socket.on('updatePlayer', onUpdatePlayer);
+    socket.on('headRotate', onHeadRotate);
     function onReady() {
         console.log('ready', socket.id);
         player.ready = true;
@@ -96,11 +97,14 @@ io.on('connection', function (socket) {
         clearInterval(intervalId);
         var anotherPlayer = battlePlayers.get(player);
         intervalId = setInterval(function (_) {
-            socket.emit('updateEnemy', anotherPlayer);
+            socket.emit('updateEnemy', { leftHand: anotherPlayer.leftHand, rightHand: anotherPlayer.rightHand });
         }, 100);
     }
     function stopUpdateAnotherPlayer() {
         clearInterval(intervalId);
+    }
+    function onHeadRotate(axis) {
+        player.headRotation = axis;
     }
     /**
      * コネクション切断時にリソースを開放する

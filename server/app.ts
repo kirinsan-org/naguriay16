@@ -24,6 +24,7 @@ class Player {
   leftHand: Hand;
   rightHand: Hand;
   guard: Boolean;
+  headRotation: Number;
 
   constructor() {
     this.hp = 20;
@@ -56,6 +57,7 @@ io.on('connection', (socket) => {
   socket.on('attack', onAttack);
   socket.on('guard', onGuard);
   socket.on('updatePlayer', onUpdatePlayer);
+  socket.on('headRotate', onHeadRotate);
 
   function onReady() {
     console.log('ready', socket.id);
@@ -130,12 +132,16 @@ io.on('connection', (socket) => {
     let anotherPlayer = battlePlayers.get(player);
 
     intervalId = setInterval(_ => {
-      socket.emit('updateEnemy', anotherPlayer);
+      socket.emit('updateEnemy', { leftHand: anotherPlayer.leftHand, rightHand: anotherPlayer.rightHand });
     }, 100);
   }
 
   function stopUpdateAnotherPlayer() {
     clearInterval(intervalId);
+  }
+
+  function onHeadRotate(axis: number) {
+    player.headRotation = axis;
   }
 
   /**

@@ -3,12 +3,16 @@
 const EMIT_INTERVAL = 1 / 20;
 
 class SocketHandler {
-  constructor(game, leap) {
+  constructor(game) {
     this.game = game;
-    this.leapHandler = leapHandler;
+
     if (window.io) {
       // Socket.ioの接続を開始
       this.socket = io.connect();
+
+      // TODO dummy
+      this.setFace('img/kao.png');
+      this.ready();
 
       /**
        * 対戦相手が見つかった時
@@ -19,6 +23,11 @@ class SocketHandler {
        */
       this.socket.on('startBattle', enemyData => {
         this.game.setEnemyHead(enemyData.face, enemyData.hair);
+        this.game.enemy.visible = true;
+      });
+
+      this.socket.on('damage', _ => {
+        console.log('damage');
       });
 
       /**
@@ -47,28 +56,33 @@ class SocketHandler {
         console.log('attacked');
       });
 
-      this.socket.on('lose', _ => {
-        alert('lose!');
+      this.socket.on('endBattle', result => {
+        console.log('endBattle', result);
+        alert('END!');
       });
 
-      this.socket.on('win', _ => {
-        alert('win!');
-      });
+      // エラー通知
+      this.socket.on('remoteError', err => {
+        console.error('remoteError');
+        // alert('Error!');
+      })
 
       // 自分の更新を送り続ける
       setInterval(_ => {
         this.updatePlayer();
-
-        // パンチを送信する
-        if (!this.attackSent && this.leapHandler.punching) {
-          this.sendAttack();
-          this.attackSent = true;
-        } else if (this.attackSent && !this.leapHandler.punching) {
-          // パンチ後一定期間経過したら attackSent を戻す
-          this.attackSent = false;
-        }
-
       }, EMIT_INTERVAL);
+    }
+  }
+
+  setFace(faceUrl) {
+    if (window.io) {
+      this.socket.emit('setFace', faceUrl);
+    }
+  }
+
+  ready() {
+    if (window.io) {
+      this.socket.emit('ready');
     }
   }
 
@@ -77,7 +91,9 @@ class SocketHandler {
    */
   sendAttack() {
     if (window.io) {
-      this.socket.emit('attack');
+      this.socket.emit('attack', result => {
+        console.log('attack result', result);
+      });
     }
   }
 
@@ -91,8 +107,7 @@ class SocketHandler {
         position: [player.rightHand.position.x, player.rightHand.position.y, player.rightHand.position.z]
       };
 
-      let defencing = this.leapHandler.defencing;
-      this.socket.emit('updatePlayer', { defencing, leftHand, rightHand });
+      this.socket.emit('updatePlayer', { leftHand, rightHand });
     }
   }
 }

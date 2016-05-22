@@ -2,11 +2,12 @@ const express = require('express');
 const app = express();
 const server = require('http').Server(app);
 const io = require('socket.io')(server);
+const path = require('path');
 declare const WeakMap: any;
 declare const Map: any;
 
 // 静的ファイルホスティング
-app.use(express.static(__dirname + '/public'));
+app.use(express.static(path.join(__dirname, '..', 'sites', 'build')));
 
 class Hand {
   position: Number[]
@@ -50,7 +51,7 @@ io.on('connection', (socket) => {
     console.log('setFace', socket.id, face);
     player.face = face
   });
-  
+
   socket.on('ready', onReady);
   socket.on('attack', onAttack);
   socket.on('guard', onGuard);

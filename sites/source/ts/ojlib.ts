@@ -72,7 +72,7 @@ class FaceRecognition {
     
     this._$el.video = document.getElementById('videoel');
     this._$el.faceMask = document.getElementById('face-mask');
-    this._$el.canvasCrop = document.getElementById('overlay');
+    this._$el.canvasCrop = document.getElementById('myface');
     this._$el.cropCtx = this._$el.canvasCrop.getContext('2d');
     
     this._ctrack = new clm.tracker();
@@ -146,7 +146,20 @@ class FaceRecognition {
       0,0,tgtWidth,tgtWidth); 
     //canvasの状態を元に戻す
     ctx.restore();
-    // ctx.drawImage(this._$el.faceMask,0,0,tgtWidth,tgtWidth); 
-    
+    ctx.drawImage(this._$el.faceMask,0,0,tgtWidth,tgtWidth); 
+  }
+  
+  getFaceTexture(){
+    const $c = $("<canvas />");
+          $c.attr({"width":1200,"height":200});
+          //$c.appendTo("body").css({"z-index":3000,"position":"fixed","left":0});
+    const $img = $("#face-texture");
+    const ctx =  $c.get(0).getContext('2d');
+
+    ctx.drawImage($img.get(0),0,0);
+    ctx.drawImage(this._$el.canvasCrop,200,0);
+
+    var data = $c.get(0).toDataURL("image/jpeg",0.3);
+    return data;
   }
 }

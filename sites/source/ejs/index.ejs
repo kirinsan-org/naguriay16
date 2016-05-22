@@ -4,48 +4,116 @@
     <meta charset="UTF-8">
     <title></title>
     <link rel="stylesheet" href="/css/index.css">
-    <script src="https://code.jquery.com/jquery-2.2.4.js"></script>
-    <script src="/lib/clmtrackr.js"></script>
-    <script src="/lib/model_pca_20_svm.js"></script>
-    
-    <!-- <script src="https://js.leapmotion.com/leap-0.6.4.min.js"></script> -->
-    <script src="https://js.leapmotion.com/leap-0.6.4.js"></script>
+    <link rel="stylesheet" href="/css/font-awesome.css">
+    <link rel="stylesheet" href="/css/animate.css">
 </head>
 <body>
+<div class="button-units" id="bottons-start">
+  <a href="#" id="btn-start-game" ><i class="fa fa-gamepad" aria-hidden="true"></i> START</a>
+</div>
 
-<div id="title"><div id="logo"></div></div>
+<div id="strobe">
+  
+</div>
+<div class="button-units" id="bottons-takephoto">
+  <a href="#" id="btn-shutter" ><i class="fa fa-camera" aria-hidden="true"></i></a>
+</div>
+
+<div class="cube-wrap" id="face-preview">
+	<div class="cube">
+		<div class="front">front</div>
+		<div class="back">back</div>
+		<div class="top">top</div>
+		<div class="bottom">bottom</div>
+		<div class="left">left</div>
+		<div class="right">right</div>
+	</div>
+</div>
+
+<div id="intro"><div id="logo"></div></div>
+<div id="game"><div id="title-image"></div></div>
+
+
 
 <audio src="/sound/kirin.mp3" id="sound-logo"></audio>
 <audio src="/sound/title.mp3" id="title-sound"></audio>
+<audio src="/sound/shutter.mp3" id="shutter-sound"></audio>
 
-<script>
-  setTimeout(function(){
-    $("#logo").show();
-    $("#sound-logo").get(0).play();
-    
-    setTimeout(function(){
-      $("#title-sound").get(0).play();
-      $("#logo").hide();
-      $("#title-logo").show();
-    },1000)
-  },1000)
-  $("#logo").click(function(){
-    
-  });
-</script>
 
-<img src="/images/face_mask.png" alt="" id="face-mask">
-<video id="videoel" width="400" height="300" preload="auto" loop></video>
-<canvas id="overlay" width="200" height="200"></canvas> 
+<div id="facerecog">
+  <video id="videoel" width="400" height="300" preload="auto" loop></video>
+  <img src="/images/face_mask.png" alt="" id="face-mask">
+  <img src="/images/face_texture.png" alt="" id="face-texture">
+</div>
+<div id="photobooth">
+  <canvas id="myface" width="200" height="200"></canvas>
+</div> 
+
+<img src="/images/fire.gif" alt="" id="face-fire-fx">
 
   <div id="bits">
     <div id="left"></div>
     <div id="right"></div>
   </div>
 </body>
-<script src="/js/main.js"></script>
+
+<canvas id="mainstage"></canvas>
+<script src="https://code.jquery.com/jquery-2.2.4.js"></script>
+<script src="/lib/clmtrackr.js"></script>
+<script src="/lib/model_pca_20_svm.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script src="lib/leap-0.6.4.min.js"></script>
+<script src="lib/three.min.js"></script>
+<script src="createCubeGeometry.js"></script>
+<script src="BaseGame.js"></script>
+<script src="Game.js"></script>
+<script src="LeapHandler.js"></script>
+<script src="SocketHandler.js"></script>
+
+<script src="/js/ojlib.js"></script>
+<script src="main.js"></script>
 <script>
-  var motion = new Motion();
+   var motion = new Motion();
   var fr = new FaceRecognition();
+  var faceTexture = null;
+  
+  function strobe(){
+    $("#strobe").show();
+    $("#shutter-sound").get(0).play();
+    setTimeout(function(){
+      faceTexture = fr.getFaceTexture();
+      console.log(faceTexture);
+      $("#strobe").fadeOut();
+    },100);
+  }
+  $("#btn-shutter").on("click",function(){
+    strobe();
+  })
+
+$("#intro").show();
+setTimeout(function(){
+  $("#logo").show();
+  $("#sound-logo").get(0).play();
+  
+  setTimeout(function(){
+    $("#title-sound").get(0).play();
+    $("#intro").hide();
+    $("#game").show().addClass("animated bounceIn")
+    
+    setTimeout(function(){
+      $("#bottons-start").addClass("active");
+    },500);
+  },1000);
+},1000);
+$("#logo").click(function(){});
+
+$("#btn-start-game").on({"click":function(){
+  $("#title-image").fadeOut();
+  $("#bottons-start").removeClass("active");
+  $("#photobooth").addClass("active")
+  $("#face-fire-fx").addClass("active")
+  $("#bottons-takephoto").addClass("active")
+  return false;
+}});
 </script>
 </html>

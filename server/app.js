@@ -2,8 +2,9 @@ var express = require('express');
 var app = express();
 var server = require('http').Server(app);
 var io = require('socket.io')(server);
+var path = require('path');
 // 静的ファイルホスティング
-app.use(express.static(__dirname + '/public'));
+app.use(express.static(path.join(__dirname, '..', 'sites', 'build')));
 var Hand = (function () {
     function Hand() {
         this.position = [0, 0, 0];

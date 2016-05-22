@@ -1,3 +1,5 @@
+@import url(https://fonts.googleapis.com/css?family=Roboto:400,700italic,300,500italic,500,700);
+
 body,html {
   margin: 0;padding: 0;width: 100px;
   height:100%;
@@ -20,7 +22,7 @@ body {
 }
 
 
-#title {
+#intro {
   $width:500px;
   $height:200px;
   display:none;
@@ -48,3 +50,150 @@ body {
   }  
 }
 
+
+@keyframes scrolling {
+0% {background-position:0px 0px;}
+100% {background-position:-100vw 0px;}}
+
+
+#game {
+  $width:500px;
+  $height:250px;
+  // transform:translate3d(0,0,0);	
+  
+  width:100vw;
+  height:100vh;
+
+  position: fixed;
+  z-index:1;
+  left:0;
+  top:0;
+  
+  background-image: url(/images/title_bg.png);
+  animation: 80s linear scrolling infinite;
+  background-size: 100% auto;
+  
+  display:none;
+  
+  
+  #title-image {
+    width: $width;
+    height: $height;
+    margin: $height*-0.5 $width*-0.5;
+    background-image: url(/images/title.png);
+    background-size: contain;
+    position: absolute;
+    left:50%;
+    top:50%;
+    //display:none;
+  }
+  
+  
+}
+
+.button-units {
+  z-index:100;
+  position: absolute;
+  width:100%;
+  bottom:-100px;
+  height:100px;
+  text-align:center;
+  transition: bottom .4s cubic-bezier(0.29, -0.34, 0, 1.54) 0s;
+  &.active {
+    bottom:0;
+  }
+  a {
+    display:inline-block;
+    font-family:'roboto';
+    font-weight:bold;
+    font-style: italic;
+    border:2px solid #fff;
+    border-radius:32px;
+    background-color:rgba(0,0,0,0.5);
+    color:#fff;
+    text-decoration:none;
+    font-size:24px;
+    height:36px;
+    padding:8px 32px;
+    transition: color 0.1s linear 0s, background 0.1s linear 0s, transform 0.2s cubic-bezier(0.17, -0.43, 0.22, 1.29) 0s; 
+    transform: scale(1) translate(0,0px);
+    position: relative;
+    z-index:1;
+    &:hover {
+      background-color: #fff;
+      color:#333;
+      transform: scale(1.2) translate(0,0px);
+      z-index:10;
+    }
+    
+    &:active {
+      transform: scale(1) translate(0,4px);
+    }
+    
+    > i {
+      font-size:130%;
+    }
+    
+  }
+}
+
+
+
+
+#facerecog {
+  display: none;
+}
+
+
+#face-fire-fx {
+  $size : 450px*2.2;
+  width:$size;
+  height:$size;
+  left:50%;
+  top:-50%;
+  margin:$size*-0.5;
+  position: absolute;
+  z-index:50;
+  mix-blend-mode: lighten;
+  &.active {
+    top:49%;
+  }
+}
+#photobooth {
+  $size : 450px;
+  width:$size;
+  height:$size;
+  margin:$size*-0.5;
+  position: absolute;
+  left:50%;
+  top:-50%;
+  border-radius:100%;
+  transition: top 0.5s cubic-bezier(0.17, -0.43, 0.22, 1.29) 0s;
+  z-index:110;
+  
+  canvas {
+    border-radius:100%;
+    width:$size;
+    height:$size;
+  }
+  img {
+    mix-blend-mode: lighten;
+  }
+  &.active {
+    top:50%;
+  }
+  
+  box-shadow: 0 0 8px #000;
+  z-index:100;
+}
+
+#strobe {
+  display: none;
+  background-color: #fff;
+  width:100vw;
+  height:100vh;
+  position: fixed;
+  z-index:1000;
+  
+}
+ 
